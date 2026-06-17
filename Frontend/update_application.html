@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Review Application</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2436; --border: #1e2d45;
+    --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.15); --green: #10b981; --amber: #f59e0b;
+    --red: #ef4444; --purple: #8b5cf6; --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+    --heading-font: 'Syne', sans-serif; --body-font: 'Inter', sans-serif;
+  }
+  body { background: var(--bg); font-family: var(--body-font); color: var(--text); min-height: 100vh; }
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-brand { font-family: var(--heading-font); font-size: 20px; font-weight: 800; }
+  .nav-brand span { color: var(--accent); }
+  .btn-back { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 7px 14px; border-radius: 7px; text-decoration: none; font-size: 13px; transition: all 0.2s; }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+  .page { max-width: 860px; margin: 0 auto; padding: 36px 24px; display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+  @media (max-width: 740px) { .page { grid-template-columns: 1fr; } }
+
+  /* Candidate card */
+  .candidate-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .candidate-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+  .candidate-name { font-family: var(--heading-font); font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .candidate-email { font-size: 14px; color: var(--muted); }
+  .score-badge { text-align: center; }
+  .score-num { font-family: var(--heading-font); font-size: 36px; font-weight: 800; }
+  .score-num.high { color: var(--green); }
+  .score-num.mid { color: var(--amber); }
+  .score-num.low { color: var(--red); }
+  .score-label { font-size: 11px; color: var(--muted); }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .info-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .info-item .i-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 4px; }
+  .info-item .i-value { font-size: 13px; color: var(--text); }
+
+  .skills-section { margin-bottom: 20px; }
+  .section-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-pill { background: var(--surface2); border: 1px solid var(--border); color: var(--muted2);
+    font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+  .skill-pill.matched { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: var(--green); }
+
+  .cover-letter { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; font-size: 13px; color: var(--muted2); line-height: 1.7; white-space: pre-wrap; }
+
+  .resume-link { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-glow);
+    border: 1px solid rgba(59,130,246,0.3); color: var(--accent); padding: 8px 16px; border-radius: 8px;
+    text-decoration: none; font-size: 13px; font-weight: 500; margin-top: 8px; transition: opacity 0.2s; }
+  .resume-link:hover { opacity: 0.85; }
+
+  /* Action Form */
+  .action-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; position: sticky; top: 80px; }
+  .action-title { font-family: var(--heading-font); font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .action-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .form-group select, .form-group input, .form-group textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px; font-family: var(--body-font);
+    font-size: 13px; outline: none; transition: border-color 0.2s; resize: vertical; }
+  .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--accent); }
+  .status-option { padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+
+  .btn-primary { width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; font-family: var(--body-font); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s; margin-top: 4px; }
+  .btn-primary:hover { opacity: 0.88; }
+
+  .interview-section { display: none; }
+  .interview-section.visible { display: block; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">Talent<span>Bridge</span></div>
+  <div class="nav-right"><a href="/" class="btn-back">← Dashboard</a></div>
+</nav>
+
+<div class="page">
+  <!-- Candidate Detail -->
+  <div class="candidate-card">
+    <div class="candidate-header">
+      <div>
+        <div class="candidate-name">{{ application.candidate_name }}</div>
+        <div class="candidate-email">{{ application.candidate_email }}</div>
+      </div>
+      <div class="score-badge">
+        <div class="score-num {% if application.match_score|int >= 70 %}high{% elif application.match_score|int >= 40 %}mid{% else %}low{% endif %}">{{ application.match_score }}%</div>
+        <div class="score-label">Skill Match</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item"><div class="i-label">Applied For</div><div class="i-value">{% if job %}{{ job.title }}{% else %}Job #{{ application.job_id }}{% endif %}</div></div>
+      <div class="info-item"><div class="i-label">Applied On</div><div class="i-value">{{ application.applied_at }}</div></div>
+      <div class="info-item"><div class="i-label">Current Status</div><div class="i-value">{{ application.status }}</div></div>
+      {% if application.interview_date %}
+      <div class="info-item"><div class="i-label">Interview Date</div><div class="i-value">{{ application.interview_date }}</div></div>
+      {% endif %}
+    </div>
+
+    {% if application.skills %}
+    <div class="skills-section">
+      <div class="section-label">Candidate Skills</div>
+      <div class="skills-wrap">
+        {% set job_skills = job.required_skills.split(',') | map('trim') | map('lower') | list if job else [] %}
+        {% for skill in application.skills.split(',') %}
+        <span class="skill-pill {% if skill.strip().lower() in job_skills %}matched{% endif %}">{{ skill.strip() }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if application.resume_path %}
+    <div style="margin-bottom:16px;">
+      <div class="section-label">Resume</div>
+      <a href="/static/{{ application.resume_path }}" target="_blank" class="resume-link">📄 Download Resume</a>
+    </div>
+    {% endif %}
+
+    <div>
+      <div class="section-label">Cover Letter</div>
+      <div class="cover-letter">{{ application.cover_letter }}</div>
+    </div>
+  </div>
+
+  <!-- Action Sidebar -->
+  <div class="action-card">
+    <div class="action-title">Update Application</div>
+    <div class="action-sub">Change status and schedule an interview if needed.</div>
+
+    <form method="post" action="/applications/{{ application.id }}/update">
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status" id="statusSelect" onchange="toggleInterview(this.value)" required>
+          {% for s in ['Applied', 'Shortlisted', 'Interview', 'Hired', 'Rejected'] %}
+          <option {% if application.status == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="interview-section {% if application.status == 'Interview' %}visible{% endif %}" id="interviewSection">
+        <div class="form-group">
+          <label>Interview Date & Time</label>
+          <input type="datetime-local" name="interview_date"
+            value="{{ application.interview_date or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Notes for Candidate</label>
+          <textarea name="interview_notes" rows="3"
+            placeholder="Zoom link, location, what to prepare…">{{ application.interview_notes or '' }}</textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">Save Changes →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function toggleInterview(value) {
+  const section = document.getElementById('interviewSection');
+  section.classList.toggle('visible', value === 'Interview');
+}
+toggleInterview(document.getElementById('statusSelect').value);
+</script>
+</body>
+</html>

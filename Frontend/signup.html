@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Create Account</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2436; --border: #1e2d45;
+    --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.18); --green: #10b981;
+    --text: #e2e8f0; --muted: #64748b;
+    --heading-font: 'Syne', sans-serif; --body-font: 'Inter', sans-serif;
+  }
+  body { background: var(--bg); font-family: var(--body-font); color: var(--text);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; }
+  body::before { content: ''; position: fixed; top: -120px; left: -120px;
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none; }
+  body::after { content: ''; position: fixed; bottom: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(16,185,129,0.09) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none; }
+  .auth-wrapper { display: flex; width: 880px; max-width: 95vw; min-height: 560px;
+    border-radius: 20px; overflow: hidden; border: 1px solid var(--border);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5); position: relative; z-index: 1; }
+  .auth-brand { width: 40%; background: linear-gradient(145deg, #0f1e3a 0%, #0a1628 100%);
+    padding: 48px 36px; display: flex; flex-direction: column; justify-content: space-between;
+    border-right: 1px solid var(--border); }
+  .brand-logo { font-family: var(--heading-font); font-size: 26px; font-weight: 800;
+    color: var(--text); letter-spacing: -0.5px; }
+  .brand-logo span { color: var(--accent); }
+  .brand-tagline h2 { font-family: var(--heading-font); font-size: 24px; font-weight: 700;
+    line-height: 1.3; margin-bottom: 12px; }
+  .brand-tagline p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .features { display: flex; flex-direction: column; gap: 12px; }
+  .feature { display: flex; align-items: flex-start; gap: 10px; }
+  .feature-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-glow);
+    border: 1px solid rgba(59,130,246,0.3); display: flex; align-items: center;
+    justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .feature-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .feature-text strong { color: var(--text); display: block; font-size: 13px; margin-bottom: 2px; }
+  .auth-form { flex: 1; background: var(--surface); padding: 44px 44px;
+    display: flex; flex-direction: column; justify-content: center; }
+  .auth-form h1 { font-family: var(--heading-font); font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .auth-form .subtitle { font-size: 14px; color: var(--muted); margin-bottom: 26px; }
+  .auth-form .subtitle a { color: var(--accent); text-decoration: none; }
+  .error-msg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 18px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .form-group input, .form-group select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 13px; border-radius: 8px;
+    font-family: var(--body-font); font-size: 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .role-label { display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .role-toggle { display: flex; gap: 10px; margin-bottom: 16px; }
+  .role-card { flex: 1; border: 1px solid var(--border); background: var(--surface2);
+    border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .role-card input[type="radio"] { display: none; }
+  .role-card:has(input:checked) { border-color: var(--accent); background: var(--accent-glow); }
+  .role-card .role-icon { font-size: 22px; margin-bottom: 4px; }
+  .role-card .role-name { font-size: 13px; font-weight: 600;
+    color: var(--muted); transition: color 0.2s; }
+  .role-card:has(input:checked) .role-name { color: var(--accent); }
+  .role-card .role-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .btn-primary { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; font-family: var(--body-font); font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s; margin-top: 4px; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  @media (max-width: 640px) { .auth-brand { display: none; } .form-row { grid-template-columns: 1fr; } .auth-form { padding: 28px 20px; } }
+</style>
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-brand">
+    <div class="brand-logo">Talent<span>Bridge</span></div>
+    <div class="brand-tagline">
+      <h2>Your next opportunity starts here.</h2>
+      <p>Whether you're hiring or applying, TalentBridge makes the process transparent and smart.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-text"><strong>AI Skill Matching</strong>See how well your skills align with any role instantly.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📋</div>
+        <div class="feature-text"><strong>Live Tracking</strong>Know exactly where your application stands at all times.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <div class="feature-text"><strong>Interview Scheduling</strong>Recruiters set dates; candidates stay informed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form">
+    <h1>Create your account</h1>
+    <p class="subtitle">Already have one? <a href="/login">Sign in</a></p>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/signup">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" placeholder="Sanika Shinde" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="you@example.com" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <span class="role-label">I am a…</span>
+      <div class="role-toggle">
+        <label class="role-card">
+          <input type="radio" name="role" value="candidate" checked>
+          <div class="role-icon">👤</div>
+          <div class="role-name">Candidate</div>
+          <div class="role-desc">Looking for a job</div>
+        </label>
+        <label class="role-card">
+          <input type="radio" name="role" value="recruiter">
+          <div class="role-icon">🏢</div>
+          <div class="role-name">Recruiter</div>
+          <div class="role-desc">Hiring talent</div>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary">Create Account →</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

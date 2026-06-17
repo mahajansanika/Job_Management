@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Sign In</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2436;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59,130,246,0.18);
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --heading-font: 'Syne', sans-serif;
+    --body-font: 'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--body-font);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Ambient blobs */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; left: -120px;
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(16,185,129,0.09) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .auth-wrapper {
+    display: flex;
+    width: 880px;
+    max-width: 95vw;
+    min-height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Left panel */
+  .auth-brand {
+    width: 44%;
+    background: linear-gradient(145deg, #0f1e3a 0%, #0a1628 100%);
+    padding: 48px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-brand::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .brand-logo {
+    font-family: var(--heading-font);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    position: relative;
+  }
+  .brand-logo span { color: var(--accent); }
+
+  .brand-tagline {
+    position: relative;
+  }
+  .brand-tagline h2 {
+    font-family: var(--heading-font);
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .brand-tagline p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .brand-stats {
+    display: flex;
+    gap: 24px;
+    position: relative;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--heading-font);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* Right panel (form) */
+  .auth-form {
+    flex: 1;
+    background: var(--surface);
+    padding: 48px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .auth-form h1 {
+    font-family: var(--heading-font);
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .auth-form .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .auth-form .subtitle a { color: var(--accent); text-decoration: none; }
+  .auth-form .subtitle a:hover { text-decoration: underline; }
+
+  .error-msg {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 7px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-family: var(--body-font);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .form-group select option { background: var(--surface2); }
+
+  .role-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .role-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--body-font);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .role-btn input[type="radio"] { display: none; }
+  .role-btn:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent);
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--body-font);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    margin-top: 6px;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  @media (max-width: 640px) {
+    .auth-brand { display: none; }
+    .auth-form { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="auth-wrapper">
+  <div class="auth-brand">
+    <div class="brand-logo">Talent<span>Bridge</span></div>
+    <div class="brand-tagline">
+      <h2>Find the role that fits who you are.</h2>
+      <p>Smart skill matching, transparent tracking, and streamlined interviews — all in one place.</p>
+    </div>
+    <div class="brand-stats">
+      <div class="stat"><div class="stat-num">2.4K</div><div class="stat-label">Open Roles</div></div>
+      <div class="stat"><div class="stat-num">840</div><div class="stat-label">Companies</div></div>
+      <div class="stat"><div class="stat-num">92%</div><div class="stat-label">Match Rate</div></div>
+    </div>
+  </div>
+
+  <div class="auth-form">
+    <h1>Welcome back</h1>
+    <p class="subtitle">New here? <a href="/signup">Create an account</a></p>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/login">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary">Sign In →</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Edit Job</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2436; --border: #1e2d45;
+    --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.15); --amber: #f59e0b;
+    --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+    --heading-font: 'Syne', sans-serif; --body-font: 'Inter', sans-serif;
+  }
+  body { background: var(--bg); font-family: var(--body-font); color: var(--text); min-height: 100vh; }
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-brand { font-family: var(--heading-font); font-size: 20px; font-weight: 800; }
+  .nav-brand span { color: var(--accent); }
+  .btn-back { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 7px 14px; border-radius: 7px; text-decoration: none; font-size: 13px; transition: all 0.2s; }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+  .page { max-width: 780px; margin: 0 auto; padding: 36px 24px; }
+  .page-title { font-family: var(--heading-font); font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+  .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+  .form-section { margin-bottom: 28px; }
+  .form-section-title { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 14px; border-radius: 8px; font-family: var(--body-font);
+    font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; resize: vertical; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+  .form-actions { display: flex; gap: 12px; justify-content: flex-end; padding-top: 8px; }
+  .btn-primary { background: var(--amber); color: #000; border: none; padding: 12px 28px;
+    border-radius: 8px; font-family: var(--body-font); font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-cancel { background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+    padding: 12px 22px; border-radius: 8px; font-family: var(--body-font); font-size: 14px;
+    cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">Talent<span>Bridge</span></div>
+  <div class="nav-right"><a href="/" class="btn-back">← Dashboard</a></div>
+</nav>
+
+<div class="page">
+  <div class="page-title">Edit Job Listing</div>
+  <div class="page-sub">Update the details for "{{ job.title }}" at {{ job.company }}.</div>
+
+  <div class="form-card">
+    <form method="post" action="/jobs/update/{{ job.id }}">
+      <div class="form-section">
+        <div class="form-section-title">Basic Info</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Job Title</label>
+            <input type="text" name="title" value="{{ job.title }}" required>
+          </div>
+          <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" name="company" value="{{ job.company }}" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" value="{{ job.location }}" required>
+          </div>
+          <div class="form-group">
+            <label>Salary Range</label>
+            <input type="text" name="salary_range" value="{{ job.salary_range }}" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Job Type</label>
+            <select name="job_type" required>
+              {% for jtype in ['Full-time','Part-time','Remote','Hybrid','Contract','Internship'] %}
+              <option {% if job.job_type == jtype %}selected{% endif %}>{{ jtype }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Experience Level</label>
+            <select name="experience_level" required>
+              {% for lvl in ['Entry Level (0–2 yrs)','Mid Level (2–5 yrs)','Senior Level (5+ yrs)','Fresher / Intern'] %}
+              <option {% if job.experience_level == lvl %}selected{% endif %}>{{ lvl }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Listing Status</label>
+          <select name="status" required>
+            <option value="open" {% if job.status == 'open' %}selected{% endif %}>Open</option>
+            <option value="closed" {% if job.status == 'closed' %}selected{% endif %}>Closed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">Job Description</div>
+        <div class="form-group">
+          <label>Full Description</label>
+          <textarea name="description" rows="6" required>{{ job.description }}</textarea>
+        </div>
+        <div class="form-group">
+          <label>Required Skills</label>
+          <input type="text" name="required_skills" value="{{ job.required_skills }}" required>
+          <div class="hint">Comma-separated — used for skill match scoring.</div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-primary">Save Changes →</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

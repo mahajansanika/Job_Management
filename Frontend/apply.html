@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Apply</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2436; --border: #1e2d45;
+    --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.15); --green: #10b981;
+    --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+    --heading-font: 'Syne', sans-serif; --body-font: 'Inter', sans-serif;
+  }
+  body { background: var(--bg); font-family: var(--body-font); color: var(--text); min-height: 100vh; }
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-brand { font-family: var(--heading-font); font-size: 20px; font-weight: 800; }
+  .nav-brand span { color: var(--accent); }
+  .btn-back { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 7px 14px; border-radius: 7px; text-decoration: none; font-size: 13px; transition: all 0.2s; }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+  .page { max-width: 860px; margin: 0 auto; padding: 36px 24px; display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+  @media (max-width: 780px) { .page { grid-template-columns: 1fr; } }
+
+  /* JOB SNAPSHOT */
+  .job-snapshot { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; position: sticky; top: 80px; }
+  .snapshot-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; color: var(--green); background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.2); padding: 3px 9px; border-radius: 20px; margin-bottom: 12px; }
+  .snapshot-title { font-family: var(--heading-font); font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .snapshot-company { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+  .snapshot-meta { display: flex; flex-direction: column; gap: 8px; }
+  .snapshot-meta-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted2); }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .skills-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 8px; }
+  .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-pill { background: var(--surface2); border: 1px solid var(--border); color: var(--muted2);
+    font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+
+  /* FORM */
+  .form-col { }
+  .form-col .page-title { font-family: var(--heading-font); font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+  .form-col .page-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .form-section-title { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+  .form-group input, .form-group textarea {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 14px; border-radius: 8px; font-family: var(--body-font);
+    font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; resize: vertical; }
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  /* File Upload Drop Zone */
+  .file-drop {
+    border: 2px dashed var(--border); border-radius: 10px; padding: 28px 20px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface2); position: relative;
+  }
+  .file-drop:hover, .file-drop.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+  .file-drop input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .file-drop .upload-icon { font-size: 32px; margin-bottom: 8px; }
+  .file-drop .upload-text { font-size: 14px; color: var(--muted2); }
+  .file-drop .upload-text strong { color: var(--accent); }
+  .file-drop .upload-hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .file-name { margin-top: 10px; font-size: 13px; color: var(--green); display: none; }
+
+  /* Skill match preview */
+  .match-preview { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-top: 8px; display: none; }
+  .match-preview .mp-title { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+  .match-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; margin-bottom: 6px; }
+  .match-bar { height: 100%; border-radius: 4px; background: var(--green); transition: width 0.4s ease; }
+  .match-pct { font-family: var(--heading-font); font-size: 20px; font-weight: 800; color: var(--green); }
+  .match-detail { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .matched-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .skill-matched { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25);
+    color: var(--green); font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .skill-missing { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+
+  .form-actions { display: flex; gap: 12px; justify-content: flex-end; padding-top: 8px; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 12px 28px;
+    border-radius: 8px; font-family: var(--body-font); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-cancel { background: var(--surface2); color: var(--muted); border: 1px solid var(--border);
+    padding: 12px 22px; border-radius: 8px; text-decoration: none; font-size: 14px; transition: all 0.2s; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">Talent<span>Bridge</span></div>
+  <div class="nav-right"><a href="/" class="btn-back">← Back</a></div>
+</nav>
+
+<div class="page">
+  <!-- Application Form -->
+  <div class="form-col">
+    <div class="page-title">Apply for this Role</div>
+    <div class="page-sub">Your skills are matched automatically. Upload your resume and write a cover letter.</div>
+
+    <div class="form-card">
+      <form method="post" action="/jobs/{{ job.id }}/apply" enctype="multipart/form-data">
+
+        <div class="form-section-title">Your Skills</div>
+        <div class="form-group">
+          <label>Skills (comma-separated) *</label>
+          <input type="text" name="skills" id="skillsInput"
+            placeholder="Python, Splunk, SIEM, Network Security, Linux…" required
+            oninput="updateMatchPreview(this.value)">
+          <div class="hint">List all relevant skills — these are matched against the job requirements in real-time.</div>
+        </div>
+
+        <!-- Live match preview -->
+        <div class="match-preview" id="matchPreview">
+          <div class="mp-title">Skill Match Preview</div>
+          <div class="match-bar-wrap"><div class="match-bar" id="matchBar" style="width:0%"></div></div>
+          <div class="match-pct" id="matchPct">0%</div>
+          <div class="match-detail" id="matchDetail"></div>
+          <div class="matched-skills" id="matchedSkills"></div>
+        </div>
+
+        <div style="margin-bottom: 24px;"></div>
+
+        <div class="form-section-title">Resume Upload</div>
+        <div class="form-group">
+          <label>Resume / CV</label>
+          <div class="file-drop" id="fileDrop">
+            <input type="file" name="resume" id="resumeInput" accept=".pdf,.doc,.docx"
+              onchange="handleFileSelect(this)">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">Drop your resume here or <strong>browse</strong></div>
+            <div class="upload-hint">PDF, DOC, DOCX — max 5 MB</div>
+          </div>
+          <div class="file-name" id="fileName">✓ <span id="fileNameText"></span></div>
+        </div>
+
+        <div style="margin-bottom: 8px;"></div>
+        <div class="form-section-title">Cover Letter</div>
+        <div class="form-group">
+          <label>Why are you a great fit? *</label>
+          <textarea name="cover_letter" rows="6"
+            placeholder="Briefly explain why you're interested in this role and what makes you stand out…" required></textarea>
+        </div>
+
+        <div class="form-actions">
+          <a href="/" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-primary">Submit Application →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Job Snapshot Sidebar -->
+  <div class="job-snapshot">
+    <div class="snapshot-badge">Open Role</div>
+    <div class="snapshot-title">{{ job.title }}</div>
+    <div class="snapshot-company">{{ job.company }}</div>
+    <div class="snapshot-meta">
+      <div class="snapshot-meta-item">📍 {{ job.location }}</div>
+      <div class="snapshot-meta-item">⏱ {{ job.job_type }}</div>
+      <div class="snapshot-meta-item">💼 {{ job.experience_level }}</div>
+      <div class="snapshot-meta-item">💰 {{ job.salary_range }}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="skills-label">Required Skills</div>
+    <div class="skills-wrap">
+      {% for skill in job.required_skills.split(',') %}
+      <span class="skill-pill" data-skill="{{ skill.strip().lower() }}">{{ skill.strip() }}</span>
+      {% endfor %}
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:13px; color:var(--muted); line-height:1.6;">{{ job.description[:200] }}{% if job.description|length > 200 %}…{% endif %}</div>
+  </div>
+</div>
+
+<script>
+// Pull job skills from the DOM
+const jobSkills = Array.from(document.querySelectorAll('[data-skill]')).map(el => el.dataset.skill);
+
+function updateMatchPreview(value) {
+  const candidateSkills = value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+  if (candidateSkills.length === 0 || jobSkills.length === 0) {
+    document.getElementById('matchPreview').style.display = 'none';
+    return;
+  }
+
+  const matched = jobSkills.filter(s => candidateSkills.includes(s));
+  const missing = jobSkills.filter(s => !candidateSkills.includes(s));
+  const score = Math.round((matched.length / jobSkills.length) * 100);
+
+  document.getElementById('matchPreview').style.display = 'block';
+  document.getElementById('matchBar').style.width = score + '%';
+  document.getElementById('matchBar').style.background = score >= 70 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444';
+  document.getElementById('matchPct').textContent = score + '%';
+  document.getElementById('matchPct').style.color = score >= 70 ? '#10b981' : score >= 40 ? '#f59e0b' : '#ef4444';
+  document.getElementById('matchDetail').textContent = `${matched.length} of ${jobSkills.length} required skills matched`;
+
+  const wrap = document.getElementById('matchedSkills');
+  wrap.innerHTML = '';
+  matched.forEach(s => {
+    const el = document.createElement('span');
+    el.className = 'skill-matched'; el.textContent = '✓ ' + s;
+    wrap.appendChild(el);
+  });
+  missing.forEach(s => {
+    const el = document.createElement('span');
+    el.className = 'skill-missing'; el.textContent = '✗ ' + s;
+    wrap.appendChild(el);
+  });
+
+  // Highlight matched pills in sidebar
+  document.querySelectorAll('[data-skill]').forEach(pill => {
+    if (matched.includes(pill.dataset.skill)) {
+      pill.style.background = 'rgba(16,185,129,0.12)';
+      pill.style.borderColor = 'rgba(16,185,129,0.25)';
+      pill.style.color = '#10b981';
+    } else {
+      pill.style.background = '';
+      pill.style.borderColor = '';
+      pill.style.color = '';
+    }
+  });
+}
+
+function handleFileSelect(input) {
+  if (input.files && input.files[0]) {
+    document.getElementById('fileName').style.display = 'block';
+    document.getElementById('fileNameText').textContent = input.files[0].name;
+  }
+}
+
+// Drag & drop styling
+const drop = document.getElementById('fileDrop');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag-over'); });
+</script>
+</body>
+</html>

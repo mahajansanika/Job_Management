@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalentBridge — Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2436; --surface3: #1e2d45;
+    --border: #1e2d45; --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.15);
+    --green: #10b981; --amber: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
+    --text: #e2e8f0; --muted: #64748b; --muted2: #94a3b8;
+    --heading-font: 'Syne', sans-serif; --body-font: 'Inter', sans-serif;
+  }
+  body { background: var(--bg); font-family: var(--body-font); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+  .nav-brand { font-family: var(--heading-font); font-size: 20px; font-weight: 800; color: var(--text); }
+  .nav-brand span { color: var(--accent); }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .nav-badge { background: var(--accent-glow); border: 1px solid rgba(59,130,246,0.3);
+    color: var(--accent); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .nav-badge.recruiter { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: #a78bfa; }
+  .nav-user { font-size: 13px; color: var(--muted2); }
+  .nav-user strong { color: var(--text); }
+  .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 6px 14px; border-radius: 7px; font-family: var(--body-font); font-size: 12px;
+    cursor: pointer; text-decoration: none; transition: all 0.2s; }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* LAYOUT */
+  .page { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* HERO STRIP */
+  .hero-strip { background: linear-gradient(135deg, #0f1e3a 0%, #0a1628 100%);
+    border: 1px solid var(--border); border-radius: 16px; padding: 28px 32px;
+    margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .hero-text h1 { font-family: var(--heading-font); font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .hero-text p { font-size: 14px; color: var(--muted); }
+  .hero-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px 20px;
+    border-radius: 8px; font-family: var(--body-font); font-size: 13px; font-weight: 600;
+    cursor: pointer; text-decoration: none; transition: opacity 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--muted2); border: 1px solid var(--border);
+    padding: 10px 18px; border-radius: 8px; font-family: var(--body-font); font-size: 13px;
+    font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+  .stat-card .s-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-card .s-value { font-family: var(--heading-font); font-size: 28px; font-weight: 800; }
+  .stat-card .s-value.blue { color: var(--accent); }
+  .stat-card .s-value.green { color: var(--green); }
+  .stat-card .s-value.amber { color: var(--amber); }
+  .stat-card .s-value.purple { color: var(--purple); }
+  .stat-card .s-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* SECTION HEADERS */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-header h2 { font-family: var(--heading-font); font-size: 17px; font-weight: 700; }
+  .section-header .count { background: var(--surface2); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; padding: 2px 9px; border-radius: 20px; }
+
+  /* JOB CARDS */
+  .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 36px; }
+  .job-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; transition: border-color 0.2s, transform 0.2s; cursor: pointer; position: relative; }
+  .job-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .job-card.mine { border-left: 3px solid var(--purple); }
+  .job-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .job-title { font-size: 16px; font-weight: 600; margin-bottom: 3px; }
+  .job-company { font-size: 13px; color: var(--muted); }
+  .job-badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .badge-open { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+  .badge-closed { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+  .badge-applied { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(59,130,246,0.25); }
+  .job-meta { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .job-meta-item { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .job-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .skill-pill { background: var(--surface2); border: 1px solid var(--border); color: var(--muted2);
+    font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+  .skill-pill.matched { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: var(--green); }
+  .job-actions { display: flex; gap: 8px; }
+  .btn-sm { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600;
+    text-decoration: none; cursor: pointer; border: none; font-family: var(--body-font);
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+  .btn-apply { background: var(--accent); color: #fff; }
+  .btn-apply:hover { opacity: 0.85; }
+  .btn-edit { background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); }
+  .btn-edit:hover { border-color: var(--amber); color: var(--amber); }
+  .btn-delete { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+  .btn-delete:hover { background: rgba(239,68,68,0.2); }
+  .btn-view { background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); }
+  .btn-view:hover { border-color: var(--accent); color: var(--accent); }
+
+  .match-score { position: absolute; top: 16px; right: 16px; }
+  .score-ring { width: 48px; height: 48px; position: relative; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .score-text { position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 11px; font-weight: 700; }
+
+  /* APPLICATION ROWS */
+  .apps-table { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .apps-table-header { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 120px;
+    padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .apps-table-header span { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .app-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 120px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.15s; }
+  .app-row:last-child { border-bottom: none; }
+  .app-row:hover { background: var(--surface2); }
+  .app-name { font-size: 14px; font-weight: 500; }
+  .app-email { font-size: 12px; color: var(--muted); }
+  .app-cell { font-size: 13px; color: var(--muted2); }
+  .status-badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; }
+  .status-Applied { background: rgba(59,130,246,0.12); color: var(--accent); border: 1px solid rgba(59,130,246,0.25); }
+  .status-Shortlisted { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+  .status-Interview { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25); }
+  .status-Hired { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+  .status-Rejected { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+  .app-actions { display: flex; gap: 6px; }
+
+  /* MY APPLICATIONS SECTION (candidate) */
+  .my-apps-list { display: flex; flex-direction: column; gap: 12px; }
+  .my-app-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .my-app-left h3 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .my-app-left .meta { font-size: 12px; color: var(--muted); }
+  .my-app-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .match-label { font-size: 11px; color: var(--muted); }
+  .match-value { font-family: var(--heading-font); font-size: 18px; font-weight: 800; }
+  .match-value.high { color: var(--green); }
+  .match-value.mid { color: var(--amber); }
+  .match-value.low { color: var(--red); }
+
+  .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+  .empty-state a { color: var(--accent); text-decoration: none; }
+
+  .section-divider { height: 1px; background: var(--border); margin: 32px 0; }
+  @media (max-width: 768px) {
+    .hero-strip { flex-direction: column; align-items: flex-start; }
+    .apps-table-header, .app-row { grid-template-columns: 1fr 1fr; }
+    .apps-table-header span:nth-child(n+3), .app-row > *:nth-child(n+3) { display: none; }
+    .jobs-grid { grid-template-columns: 1fr; }
+    .nav { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">Talent<span>Bridge</span></div>
+  <div class="nav-right">
+    <span class="nav-badge {{ current_user.role }}">{{ current_user.role }}</span>
+    <span class="nav-user">Hello, <strong>{{ current_user.name }}</strong></span>
+    <a href="/logout" class="btn-logout">Sign out</a>
+  </div>
+</nav>
+
+<div class="page">
+
+{% if current_user.role == "recruiter" %}
+<!-- ======= RECRUITER VIEW ======= -->
+<div class="hero-strip">
+  <div class="hero-text">
+    <h1>Recruiter Dashboard</h1>
+    <p>Manage your job listings, review applicants, and schedule interviews.</p>
+  </div>
+  <div class="hero-actions">
+    <a href="/jobs/create" class="btn-primary">＋ Post a Job</a>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="s-label">Total Postings</div>
+    <div class="s-value blue">{{ my_jobs|length }}</div>
+    <div class="s-sub">your active listings</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">All Applications</div>
+    <div class="s-value purple">{{ all_applications|length }}</div>
+    <div class="s-sub">across all jobs</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">Shortlisted</div>
+    <div class="s-value amber">{{ all_applications | selectattr('status', 'equalto', 'Shortlisted') | list | length }}</div>
+    <div class="s-sub">pending review</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">Hired</div>
+    <div class="s-value green">{{ all_applications | selectattr('status', 'equalto', 'Hired') | list | length }}</div>
+    <div class="s-sub">successful placements</div>
+  </div>
+</div>
+
+<!-- My Job Listings -->
+<div class="section-header">
+  <h2>Your Job Listings</h2>
+  <span class="count">{{ my_jobs|length }} roles</span>
+</div>
+
+{% if my_jobs %}
+<div class="jobs-grid" style="margin-bottom: 36px;">
+{% for job in my_jobs %}
+<div class="job-card mine">
+  <div class="job-card-header">
+    <div>
+      <div class="job-title">{{ job.title }}</div>
+      <div class="job-company">{{ job.company }}</div>
+    </div>
+    <span class="job-badge badge-{{ job.status }}">{{ job.status|title }}</span>
+  </div>
+  <div class="job-meta">
+    <span class="job-meta-item">📍 {{ job.location }}</span>
+    <span class="job-meta-item">⏱ {{ job.job_type }}</span>
+    <span class="job-meta-item">💰 {{ job.salary_range }}</span>
+  </div>
+  <div class="job-skills">
+    {% for skill in job.required_skills.split(',')[:4] %}
+    <span class="skill-pill">{{ skill.strip() }}</span>
+    {% endfor %}
+    {% if job.required_skills.split(',')|length > 4 %}
+    <span class="skill-pill">+{{ job.required_skills.split(',')|length - 4 }} more</span>
+    {% endif %}
+  </div>
+  <div style="font-size:12px; color:var(--muted); margin-bottom:14px;">
+    📋 {{ apps_by_job.get(job.id, [])|length }} application(s) · Posted {{ job.posted_at }}
+  </div>
+  <div class="job-actions">
+    <a href="/jobs/{{ job.id }}" class="btn-sm btn-view">👁 View Apps</a>
+    <a href="/jobs/update/{{ job.id }}" class="btn-sm btn-edit">✏️ Edit</a>
+    <a href="/jobs/delete/{{ job.id }}" class="btn-sm btn-delete" onclick="return confirm('Delete this job?')">🗑</a>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📋</div>
+  <p>No job listings yet. <a href="/jobs/create">Post your first role →</a></p>
+</div>
+{% endif %}
+
+<div class="section-divider"></div>
+
+<!-- All Applications Table -->
+<div class="section-header">
+  <h2>All Applications</h2>
+  <span class="count">{{ all_applications|length }}</span>
+</div>
+
+{% if all_applications %}
+<div class="apps-table">
+  <div class="apps-table-header">
+    <span>Candidate</span>
+    <span>Role</span>
+    <span>Match</span>
+    <span>Status</span>
+    <span>Applied</span>
+    <span>Actions</span>
+  </div>
+  {% for app in all_applications %}
+  <div class="app-row">
+    <div>
+      <div class="app-name">{{ app.candidate_name }}</div>
+      <div class="app-email">{{ app.candidate_email }}</div>
+    </div>
+    <div class="app-cell">
+      {% for job in my_jobs %}{% if job.id == app.job_id %}{{ job.title }}{% endif %}{% endfor %}
+      {% if app.job_id not in my_jobs|map(attribute='id')|list %}Job #{{ app.job_id }}{% endif %}
+    </div>
+    <div class="app-cell" style="font-weight:600; color:{% if app.match_score|int >= 70 %}var(--green){% elif app.match_score|int >= 40 %}var(--amber){% else %}var(--red){% endif %}">{{ app.match_score }}%</div>
+    <div><span class="status-badge status-{{ app.status }}">{{ app.status }}</span></div>
+    <div class="app-cell">{{ app.applied_at }}</div>
+    <div class="app-actions">
+      <a href="/applications/{{ app.id }}/update" class="btn-sm btn-edit">Update</a>
+      {% if app.resume_path %}<a href="/static/{{ app.resume_path }}" target="_blank" class="btn-sm btn-view">CV</a>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📭</div>
+  <p>No applications received yet.</p>
+</div>
+{% endif %}
+
+{% else %}
+<!-- ======= CANDIDATE VIEW ======= -->
+<div class="hero-strip">
+  <div class="hero-text">
+    <h1>Find Your Next Role</h1>
+    <p>Browse open positions and see how your skills match up — instantly.</p>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="s-label">Open Roles</div>
+    <div class="s-value blue">{{ jobs|length }}</div>
+    <div class="s-sub">available now</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">Applied</div>
+    <div class="s-value purple">{{ my_applications|length }}</div>
+    <div class="s-sub">your applications</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">Shortlisted</div>
+    <div class="s-value amber">{{ my_applications | selectattr('status', 'equalto', 'Shortlisted') | list | length }}</div>
+    <div class="s-sub">in review</div>
+  </div>
+  <div class="stat-card">
+    <div class="s-label">Interviews</div>
+    <div class="s-value green">{{ my_applications | selectattr('status', 'equalto', 'Interview') | list | length }}</div>
+    <div class="s-sub">scheduled</div>
+  </div>
+</div>
+
+<!-- Open Jobs -->
+<div class="section-header">
+  <h2>Open Positions</h2>
+  <span class="count">{{ jobs|length }} roles</span>
+</div>
+
+{% if jobs %}
+<div class="jobs-grid">
+{% for job in jobs %}
+<div class="job-card">
+  <div class="job-card-header">
+    <div>
+      <div class="job-title">{{ job.title }}</div>
+      <div class="job-company">{{ job.company }}</div>
+    </div>
+    {% if job.id in applied_job_ids %}
+    <span class="job-badge badge-applied">Applied</span>
+    {% else %}
+    <span class="job-badge badge-open">Open</span>
+    {% endif %}
+  </div>
+  <div class="job-meta">
+    <span class="job-meta-item">📍 {{ job.location }}</span>
+    <span class="job-meta-item">⏱ {{ job.job_type }}</span>
+    <span class="job-meta-item">💼 {{ job.experience_level }}</span>
+    <span class="job-meta-item">💰 {{ job.salary_range }}</span>
+  </div>
+  <div class="job-skills">
+    {% for skill in job.required_skills.split(',')[:5] %}
+    <span class="skill-pill">{{ skill.strip() }}</span>
+    {% endfor %}
+  </div>
+  <div style="font-size:12px; color:var(--muted); margin-bottom:14px;">Posted {{ job.posted_at }}</div>
+  <div class="job-actions">
+    {% if job.id not in applied_job_ids %}
+    <a href="/jobs/{{ job.id }}/apply" class="btn-sm btn-apply">Apply Now</a>
+    {% else %}
+    <span class="btn-sm" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);">✓ Applied</span>
+    {% endif %}
+    <a href="/jobs/{{ job.id }}" class="btn-sm btn-view">View Details</a>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">🔍</div>
+  <p>No open positions at the moment. Check back soon!</p>
+</div>
+{% endif %}
+
+{% if my_applications %}
+<div class="section-divider"></div>
+<div class="section-header">
+  <h2>My Applications</h2>
+  <span class="count">{{ my_applications|length }}</span>
+</div>
+<div class="my-apps-list">
+{% for app in my_applications %}
+<div class="my-app-card">
+  <div class="my-app-left">
+    <h3>Job #{{ app.job_id }}</h3>
+    <div class="meta">Applied {{ app.applied_at }}
+      {% if app.interview_date %} · 📅 Interview: {{ app.interview_date }}{% endif %}
+    </div>
+    {% if app.interview_notes %}<div class="meta" style="margin-top:4px; color:var(--muted2);">📝 {{ app.interview_notes }}</div>{% endif %}
+  </div>
+  <div class="my-app-right">
+    <div>
+      <div class="match-label">Match</div>
+      <div class="match-value {% if app.match_score|int >= 70 %}high{% elif app.match_score|int >= 40 %}mid{% else %}low{% endif %}">{{ app.match_score }}%</div>
+    </div>
+    <span class="status-badge status-{{ app.status }}">{{ app.status }}</span>
+    <a href="/applications/{{ app.id }}/delete" class="btn-sm btn-delete" onclick="return confirm('Withdraw application?')">Withdraw</a>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% endif %}
+</div>
+</body>
+</html>
